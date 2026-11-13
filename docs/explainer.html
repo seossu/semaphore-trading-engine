@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ignacio-C 해설서</title>
+<style>
+:root{
+  --bg:#f7f7f5; --fg:#1d1d1f; --muted:#5f6368; --card:#ffffff; --border:#e2e2de;
+  --accent:#2f6fde; --accent-soft:#e6eefc; --amber:#b86e00; --amber-soft:#fdf1dc;
+  --ok:#1f8a4c; --ok-soft:#e3f4ea; --bad:#c62f2f; --bad-soft:#fbe6e6;
+  --code-bg:#f1f1ee; --proc:#7a4fd0; --proc-soft:#efe8fb;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141416; --fg:#ececee; --muted:#a0a3a8; --card:#1d1e21; --border:#33353a;
+    --accent:#6ea0ff; --accent-soft:#1f2c47; --amber:#f0b04c; --amber-soft:#3a2c14;
+    --ok:#4fc883; --ok-soft:#173326; --bad:#ff7676; --bad-soft:#3d1c1c;
+    --code-bg:#25272b; --proc:#b597ff; --proc-soft:#2b2340;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141416; --fg:#ececee; --muted:#a0a3a8; --card:#1d1e21; --border:#33353a;
+  --accent:#6ea0ff; --accent-soft:#1f2c47; --amber:#f0b04c; --amber-soft:#3a2c14;
+  --ok:#4fc883; --ok-soft:#173326; --bad:#ff7676; --bad-soft:#3d1c1c;
+  --code-bg:#25272b; --proc:#b597ff; --proc-soft:#2b2340;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,sans-serif;
+  line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 80px}
+header.hero{padding:56px 0 28px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.hero h1{font-size:34px;line-height:1.25;margin:0 0 12px;letter-spacing:-.02em}
+.hero p{color:var(--muted);margin:0;max-width:720px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pill{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.toc{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);
+  display:flex;gap:4px;overflow-x:auto;padding:8px 0;scrollbar-width:none}
+nav.toc a{white-space:nowrap;font-size:13.5px;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px}
+nav.toc a:hover{background:var(--card);color:var(--fg)}
+section{padding-top:44px}
+h2{font-size:24px;margin:0 0 6px;letter-spacing:-.01em}
+h2 .n{color:var(--accent);margin-right:8px;font-variant-numeric:tabular-nums}
+.lead{color:var(--muted);margin:0 0 20px}
+h3{font-size:18px;margin:26px 0 8px}
+p{margin:10px 0}
+code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.88em;background:var(--code-bg);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-x:auto;
+  font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;margin:12px 0}
+pre code{background:none;padding:0;font-size:inherit}
+.c{color:var(--muted)} .k{color:var(--accent);font-weight:600} .w{color:var(--amber);font-weight:600}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin:14px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:760px){.grid2,.grid3{grid-template-columns:1fr}.hero h1{font-size:27px}}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.stat b{display:block;font-size:24px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:none}
+.tblwrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--card)}
+.tblwrap table{margin:0}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:6px;margin-right:4px}
+.tag.ipc{background:var(--proc-soft);color:var(--proc)}
+.tag.cnt{background:var(--accent-soft);color:var(--accent)}
+.tag.bin{background:var(--amber-soft);color:var(--amber)}
+.callout{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0}
+.callout.warn{border-color:var(--amber);background:var(--amber-soft)}
+.callout.bad{border-color:var(--bad);background:var(--bad-soft)}
+.callout.ok{border-color:var(--ok);background:var(--ok-soft)}
+.semcard h3{margin-top:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.semcard .row{display:grid;grid-template-columns:92px 1fr;gap:6px 12px;font-size:15px}
+.semcard .row dt{color:var(--muted);font-weight:600;font-size:13.5px;padding-top:2px}
+.semcard .row dd{margin:0}
+@media (max-width:560px){.semcard .row{grid-template-columns:1fr}.semcard .row dt{padding-top:8px}}
+/* diagram */
+.diagram{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:14px 0}
+.diagram svg{width:100%;height:auto;display:block}
+.node rect{fill:var(--card);stroke:var(--border);stroke-width:1.5;transition:all .25s}
+.node text{fill:var(--fg);font-size:13px;font-weight:600}
+.node text.sub{fill:var(--muted);font-size:11px;font-weight:500}
+.node.ext rect{fill:var(--code-bg)}
+.node.on rect{stroke:var(--accent);stroke-width:3;fill:var(--accent-soft)}
+.frame{fill:none;stroke-width:1.5;stroke-dasharray:6 5}
+.frame.p1{stroke:var(--proc)} .frame.p2{stroke:var(--accent)}
+.flabel{font-size:12px;font-weight:700}
+.edge{stroke:var(--muted);stroke-width:1.6;fill:none;opacity:.55}
+.edge.on{stroke:var(--accent);opacity:1;stroke-width:2.6}
+.semdot{fill:var(--amber)}
+.stepper{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+button{font:inherit;font-size:14px;border:1px solid var(--border);background:var(--card);color:var(--fg);
+  padding:7px 14px;border-radius:9px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:disabled{opacity:.4;cursor:default}
+.steptext{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:10px;min-height:84px}
+.steptext b.s{color:var(--accent)}
+.dots{display:flex;gap:5px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--border);display:block}
+.dots i.on{background:var(--accent)}
+/* simulator */
+.sim{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+@media (max-width:760px){.sim{grid-template-columns:1fr}}
+.slots{display:flex;gap:8px;margin:10px 0}
+.slot{flex:1;height:54px;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-variant-numeric:tabular-nums;transition:all .2s}
+.slot.f{border-style:solid;border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.semvals{display:flex;gap:10px;flex-wrap:wrap}
+.sv{border:1px solid var(--border);border-radius:10px;padding:6px 12px;font-size:13px;background:var(--bg)}
+.sv b{font-size:18px;margin-left:6px;font-variant-numeric:tabular-nums}
+.waitq{font-size:13px;color:var(--muted);margin-top:8px}
+.log{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--code-bg);border-radius:10px;padding:10px;
+  height:230px;overflow-y:auto;border:1px solid var(--border)}
+.log div{padding:1px 0}
+.log .bad{color:var(--bad);font-weight:700}
+.log .okc{color:var(--ok)}
+label.tg{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:10px;cursor:pointer}
+details{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin:10px 0}
+details summary{cursor:pointer;font-weight:600;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"Q. ";color:var(--accent);font-weight:800}
+details[open] summary{margin-bottom:6px}
+.flow{counter-reset:f;list-style:none;padding:0;margin:12px 0}
+.flow li{counter-increment:f;position:relative;padding:4px 0 4px 38px;margin:6px 0}
+.flow li::before{content:counter(f);position:absolute;left:0;top:5px;width:26px;height:26px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+.themebtn{position:fixed;right:14px;bottom:14px;z-index:9;font-size:13px;padding:6px 11px;border-radius:999px}
+</style>
+</head>
+<body>
+<button class="themebtn" id="themeBtn" aria-label="테마 전환">◐ 테마</button>
+<div class="wrap">
+
+<header class="hero">
+  <h1>Ignacio-C 해설서<br><span style="color:var(--muted);font-weight:600;font-size:.62em">세마포로 동기화한 멀티스레드·멀티프로세스 자동매매 엔진</span></h1>
+  <p>무엇을 하는 프로그램인지, 어떤 스레드와 프로세스가 어떻게 협력하는지, 어디에 왜 세마포를 썼는지, 왜 교착 상태가 생기지 않는지, 무엇으로 검증했는지를 한 문서에 모았습니다. 코드 위치는 <code>ignacio_c/</code> 기준입니다.</p>
+  <div class="pills"><span class="pill">C11</span><span class="pill">pthread</span><span class="pill">POSIX named semaphore</span><span class="pill">shm_open + mmap</span><span class="pill">posix_spawn</span><span class="pill">KIS Open API</span></div>
+</header>
+
+<nav class="toc">
+  <a href="#s1">1 무엇을 하나</a><a href="#s2">2 전체 구조</a><a href="#s3">3 주문 한 건의 여정</a><a href="#s4">4 세마포 기초</a>
+  <a href="#s5">5 세마포 사용처</a><a href="#s6">6 유한 버퍼 실험</a><a href="#s7">7 교착 상태가 없는 이유</a><a href="#s8">8 프로세스와 장애 격리</a>
+  <a href="#s9">9 시그널과 종료</a><a href="#s10">10 검증</a><a href="#s11">11 macOS 함정</a><a href="#s12">12 예상 질문</a><a href="#s13">13 실행·파일·한계</a>
+</nav>
+
+<!-- 1 -->
+<section id="s1">
+<h2><span class="n">1</span>무엇을 하는 프로그램인가</h2>
+<p class="lead">KOSPI200 선물을 자동으로 사고파는 프로그램입니다. 매매 로직은 단순하고, 이 프로젝트의 핵심은 <b>여러 스레드와 프로세스가 안전하게 협력하는 구조</b>입니다.</p>
+
+<div class="grid2">
+<div class="card">
+<h3 style="margin-top:0">매매 전략: N봉 고가 돌파 (롱 온리)</h3>
+<ul style="margin:0;padding-left:20px">
+<li>시세를 받아 봉(bar)을 만든다. 모의 모드는 1초 봉, 실거래는 1분 봉</li>
+<li>현재가가 <b>최근 N개 봉의 최고가</b>를 넘으면 매수한다. 전략 8개가 각각 N=3, 5, 8, 4, 6, 10, 7, 12를 쓴다</li>
+<li>진입가 대비 손절(−0.15%, 실거래 −0.5%) 또는 익절(+0.25%, 실거래 +1.0%)에 도달하면 매도한다</li>
+<li>장 마감 시각(모의: 종료 6초 전, 실거래: 15:30)이 되면 <b>전량 청산</b>한다</li>
+</ul>
+</div>
+<div class="card">
+<h3 style="margin-top:0">실행 모드 3가지</h3>
+<table style="margin:0">
+<tr><th>모드</th><th>시세</th><th>주문</th></tr>
+<tr><td><code>mock</code></td><td>모의 랜덤워크</td><td>모의 거래소</td></tr>
+<tr><td><code>kis-dry</code></td><td>KIS 실시세</td><td>모의 거래소 (주문 안 나감)</td></tr>
+<tr><td><code>kis-live</code></td><td>KIS 실시세</td><td>KIS 모의투자 계좌</td></tr>
+</table>
+<p style="font-size:14px;color:var(--muted);margin-bottom:0">모의 서버도 실제 KIS처럼 "초당 20건"을 넘는 요청을 <code>EGW00201</code>로 거절합니다. 그래야 레이트 리미터의 효과를 측정할 수 있습니다.</p>
+</div>
+</div>
+
+<div class="grid3">
+<div class="stat"><b>2</b><span>프로세스 (feeder + 엔진)</span></div>
+<div class="stat"><b>18</b><span>엔진 스레드</span></div>
+<div class="stat"><b>132</b><span>세마포 (프로세스 간 4 + 내부 128)</span></div>
+</div>
+
+</section>
+
+<!-- 2 -->
+<section id="s2">
+<h2><span class="n">2</span>전체 구조</h2>
+<p class="lead">보라색 점선은 feeder 프로세스, 파란 점선은 엔진 프로세스입니다. 상자 하나는 스레드(또는 공유 자료구조) 하나이고, 주황 점은 그 지점에 세마포가 있다는 표시입니다.</p>
+
+<div class="diagram">
+<svg id="arch" viewBox="0 0 900 560" role="img" aria-label="시스템 구조도">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <rect class="frame p1" x="190" y="14" width="230" height="112" rx="14"/>
+  <text class="flabel" x="202" y="32" fill="var(--proc)">feeder 프로세스</text>
+  <rect class="frame p2" x="190" y="150" width="696" height="400" rx="14"/>
+  <text class="flabel" x="202" y="168" fill="var(--accent)">엔진 프로세스</text>
+
+  <!-- edges -->
+  <g style="color:var(--muted)">
+  <path id="e_kis_feed" class="edge" d="M110,230 C110,120 150,80 210,78" marker-end="url(#ar)"/>
+  <path id="e_feed_ring" class="edge" d="M400,78 L448,78" marker-end="url(#ar)"/>
+  <path id="e_ring_md" class="edge" d="M618,78 L660,78" marker-end="url(#ar)"/>
+  <path id="e_md_strat" class="edge" d="M760,112 L760,190" marker-end="url(#ar)"/>
+  <path id="e_strat_oq" class="edge" d="M660,235 L618,235" marker-end="url(#ar)"/>
+  <path id="e_oq_wk" class="edge" d="M448,235 L400,235" marker-end="url(#ar)"/>
+  <path id="e_wk_rl" class="edge" d="M300,280 L300,316" marker-end="url(#ar)"/>
+  <path id="e_wk_kis" class="edge" d="M210,250 C160,262 140,270 120,282" marker-end="url(#ar)"/>
+  <path id="e_wk_reg" class="edge" d="M400,262 C430,300 440,320 448,335" marker-end="url(#ar)"/>
+  <path id="e_wk_ex" class="edge" d="M380,280 C420,380 430,420 448,440" marker-end="url(#ar)"/>
+  <path id="e_ex_reg" class="edge" d="M533,425 L533,372" marker-end="url(#ar)"/>
+  <path id="e_ex_book" class="edge" d="M618,450 C640,420 650,380 662,366" marker-end="url(#ar)"/>
+  <path id="e_book_strat" class="edge" d="M760,320 L760,282" marker-end="url(#ar)"/>
+  <path id="e_rl_refill" class="edge" d="M300,376 L300,410" marker-end="url(#ar)"/>
+  </g>
+
+  <!-- nodes -->
+  <g class="node ext" id="n_kis"><rect x="20" y="230" width="150" height="76" rx="10"/><text x="95" y="262" text-anchor="middle">KIS 서버</text><text class="sub" x="95" y="282" text-anchor="middle">(또는 모의 서버 20건/s)</text></g>
+  <g class="node" id="n_feed"><rect x="210" y="44" width="190" height="70" rx="10"/><text x="305" y="72" text-anchor="middle">시세 조회 루프</text><text class="sub" x="305" y="92" text-anchor="middle">P(rl_md) → 조회 → 링에 tryput</text></g>
+  <g class="node" id="n_ring"><rect x="448" y="44" width="170" height="70" rx="10"/><text x="533" y="72" text-anchor="middle">공유메모리 링</text><text class="sub" x="533" y="92" text-anchor="middle">SPSC · md.e / md.f</text></g>
+  <g class="node" id="n_md"><rect x="660" y="44" width="200" height="70" rx="10"/><text x="760" y="72" text-anchor="middle">md_receiver</text><text class="sub" x="760" y="92" text-anchor="middle">전략 8개 우편함에 복제</text></g>
+  <g class="node" id="n_strat"><rect x="660" y="190" width="200" height="92" rx="10"/><text x="760" y="220" text-anchor="middle">전략 스레드 ×8</text><text class="sub" x="760" y="240" text-anchor="middle">우편함: ACK &gt; CTL &gt; 시세</text><text class="sub" x="760" y="258" text-anchor="middle">exposure · inflight 세마포</text></g>
+  <g class="node" id="n_oq"><rect x="448" y="200" width="170" height="70" rx="10"/><text x="533" y="228" text-anchor="middle">order_q</text><text class="sub" x="533" y="248" text-anchor="middle">MPMC 유한 버퍼 64칸</text></g>
+  <g class="node" id="n_wk"><rect x="210" y="190" width="190" height="90" rx="10"/><text x="305" y="222" text-anchor="middle">게이트웨이 워커 ×4</text><text class="sub" x="305" y="242" text-anchor="middle">브로커 호출 (I/O 대기)</text><text class="sub" x="305" y="260" text-anchor="middle">대기를 겹쳐 처리량 ↑</text></g>
+  <g class="node" id="n_rl"><rect x="210" y="316" width="190" height="60" rx="10"/><text x="305" y="342" text-anchor="middle">레이트 리미터</text><text class="sub" x="305" y="360" text-anchor="middle">rl_trade 10/s · rl_md 8/s</text></g>
+  <g class="node" id="n_refill"><rect x="210" y="410" width="190" height="56" rx="10"/><text x="305" y="434" text-anchor="middle">refill 스레드</text><text class="sub" x="305" y="452" text-anchor="middle">만기된 permit V()</text></g>
+  <g class="node" id="n_reg"><rect x="448" y="312" width="170" height="60" rx="10"/><text x="533" y="338" text-anchor="middle">registry</text><text class="sub" x="533" y="356" text-anchor="middle">주문번호 → 전략</text></g>
+  <g class="node" id="n_ex"><rect x="448" y="425" width="170" height="60" rx="10"/><text x="533" y="451" text-anchor="middle">모의 거래소</text><text class="sub" x="533" y="469" text-anchor="middle">20~120ms 뒤 체결</text></g>
+  <g class="node" id="n_book"><rect x="660" y="320" width="200" height="60" rx="10"/><text x="760" y="346" text-anchor="middle">포지션 장부</text><text class="sub" x="760" y="364" text-anchor="middle">Readers-Writers 락</text></g>
+  <g class="node" id="n_aux"><rect x="660" y="410" width="200" height="56" rx="10"/><text x="760" y="434" text-anchor="middle">clock · nav</text><text class="sub" x="760" y="452" text-anchor="middle">1초 틱 · 전량청산 · 잔고 대조</text></g>
+  <g class="node" id="n_main"><rect x="20" y="480" width="150" height="56" rx="10"/><text x="95" y="504" text-anchor="middle">main (supervisor)</text><text class="sub" x="95" y="522" text-anchor="middle">sigwait · feeder 재기동</text></g>
+
+  <!-- semaphore dots -->
+  <circle class="semdot" cx="613" cy="50" r="5"/><circle class="semdot" cx="855" cy="196" r="5"/><circle class="semdot" cx="613" cy="206" r="5"/>
+  <circle class="semdot" cx="395" cy="322" r="5"/><circle class="semdot" cx="613" cy="318" r="5"/><circle class="semdot" cx="855" cy="326" r="5"/>
+  <circle class="semdot" cx="613" cy="431" r="5"/>
+</svg>
+</div>
+
+<div class="tblwrap"><table>
+<tr><th>구성 요소</th><th>개수</th><th>왜 따로 뒀나</th></tr>
+<tr><td><b>feeder 프로세스</b></td><td>1</td><td>외부 네트워크와 라이브러리(libcurl)에서 생기는 장애를 격리합니다. 죽어도 주문과 포지션을 가진 엔진은 살아 있고, supervisor가 다시 띄웁니다.</td></tr>
+<tr><td><b>전략 스레드</b></td><td>8</td><td>전략끼리 격리합니다. 느린 전략 하나가 다른 전략의 시세 처리를 막지 않습니다. 전략 내부 상태는 자기 스레드만 만지므로 전략 코드에는 락이 없습니다.</td></tr>
+<tr><td><b>게이트웨이 워커</b></td><td>4</td><td>브로커 호출은 수십 ms를 기다리는 I/O입니다. 워커 여러 개가 기다리는 시간을 겹치면 처리량이 늘어납니다(1→16개에서 15.2배).</td></tr>
+<tr><td><b>md_receiver</b></td><td>1</td><td>프로세스 간 링의 유일한 소비자입니다. SPSC로 유지해야 링에 mutex가 필요 없습니다(§8).</td></tr>
+<tr><td><b>refill / clock / nav</b></td><td>각 1</td><td>"시간이 지나면 일어날 일"을 맡습니다. macOS에는 <code>sem_timedwait</code>가 없어서 시간 기반 V()는 전담 스레드가 합니다.</td></tr>
+<tr><td><b>모의 거래소</b></td><td>1</td><td>주문 접수와 체결을 비동기로 분리합니다. 실제 거래소처럼 체결이 나중에, 때로는 접수 응답보다 먼저 도착합니다.</td></tr>
+<tr><td><b>main</b></td><td>1</td><td>시그널을 이 스레드에서만 받습니다(§9). feeder가 죽으면 다시 띄웁니다.</td></tr>
+</table></div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+<h2><span class="n">3</span>주문 한 건의 여정</h2>
+<p class="lead">시세 하나가 들어와서 매수 체결이 전략에게 전달되기까지를 단계별로 따라갑니다. "다음"을 누르면 구조도에서 해당 부분이 강조됩니다.</p>
+
+<div class="diagram">
+<svg id="arch2" viewBox="0 0 900 560" aria-hidden="true"></svg>
+<div class="stepper">
+  <button id="prevBtn">← 이전</button>
+  <button id="nextBtn" class="primary">다음 →</button>
+  <div class="dots" id="dots"></div>
+  <span id="stepNo" style="font-size:13px;color:var(--muted)"></span>
+</div>
+<div class="steptext" id="stepText"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+<h2><span class="n">4</span>세마포 기초 (이 프로젝트에서 쓰는 만큼만)</h2>
+<div class="grid2">
+<div class="card">
+<h3 style="margin-top:0">P와 V</h3>
+<p>세마포는 0 이상의 정수 하나와 대기열입니다.</p>
+<ul style="padding-left:20px;margin:0">
+<li><b>P (wait)</b>: 값이 0보다 크면 1 빼고 통과하고, 0이면 잠든다</li>
+<li><b>V (post)</b>: 값을 1 더하고, 잠든 스레드가 있으면 하나 깨운다</li>
+<li><b>trywait</b>: P와 같지만 0이면 잠들지 않고 실패를 돌려준다</li>
+</ul>
+<p>POSIX는 <code>sem_post</code>가 그 값을 얻은 <code>sem_wait</code>보다 먼저 일어난 것(happens-before)으로 보장합니다. 그래서 V 전에 쓴 데이터는 P 이후에 안전하게 읽힙니다.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:0">두 가지 쓰임새</h3>
+<p><span class="tag cnt">카운팅</span><b>개수가 있는 자원</b>을 셉니다. 빈 칸 수, 1초 안에 쓸 수 있는 요청 수, 계좌 한도 계약 수, 미체결 주문 수 같은 것입니다. 이 프로젝트에서 세마포가 빛나는 곳이 여기입니다.</p>
+<p><span class="tag bin">이진</span>초기값 1이면 mutex처럼 씁니다. 이 프로젝트는 mutex도 이진 세마포로 통일했습니다. 동기화를 하나의 모델(P/V)로 논증하기 위해서입니다.</p>
+<p style="margin-bottom:0"><span class="tag ipc">named</span><code>sem_open("/이름")</code>으로 만들면 다른 프로세스도 이름으로 열 수 있습니다.</p>
+</div>
+</div>
+
+<div class="callout warn"><b>왜 전부 <code>sem_open</code>인가</b> — macOS는 이름 없는 세마포(<code>sem_init</code>)를 지원하지 않습니다(호출하면 ENOSYS). 그래서 이렇게 썼습니다.
+<ul style="margin:6px 0 0;padding-left:20px">
+<li><b>프로세스 내부용</b>: 고유 이름으로 만들고 <b>곧바로 <code>sem_unlink</code></b>합니다. 이름은 사라지고 핸들만 남아 익명 세마포처럼 동작하고, 프로그램이 비정상 종료해도 커널에 찌꺼기가 남지 않습니다. (<code>src/sem.c</code> <code>isem_init_private</code>)</li>
+<li><b>프로세스 간</b>: 엔진이 이름으로 만들고, feeder는 같은 이름으로 엽니다. 이름은 엔진이 종료할 때 지웁니다.</li>
+</ul></div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+<h2><span class="n">5</span>세마포를 어디에, 왜 썼나</h2>
+<p class="lead">각 카드는 "어떤 문제가 있었고, 세마포로 어떻게 풀었고, 없으면 무슨 일이 생기는가" 순서입니다.</p>
+
+<div class="card semcard">
+<h3>① 유한 버퍼 — 생산자·소비자 <span class="tag cnt">카운팅</span><span class="tag bin">이진</span></h3>
+<dl class="row">
+<dt>위치</dt><dd><code>src/bbuf.c</code> · 주문 큐(order_q), 거래소 큐, 우편함의 큐 3개, 프로세스 간 시세 링</dd>
+<dt>문제</dt><dd>전략 8개가 주문을 넣고 워커 4개가 꺼냅니다. 큐가 가득 차면 넣는 쪽이, 비면 꺼내는 쪽이 <b>바쁜 대기(busy-wait) 없이</b> 잠들어야 하고, 같은 칸을 두 스레드가 동시에 건드리면 안 됩니다.</dd>
+<dt>해법</dt><dd><code>empty</code>(빈 칸 수, 초기값=용량), <code>full</code>(찬 칸 수, 0), 생산자용 <code>pmtx</code>와 소비자용 <code>cmtx</code>(각 1)를 둡니다.</dd>
+</dl>
+<pre><code>put:  <span class="k">P(empty)</span>; P(pmtx); slot[tail] = x; tail++; V(pmtx); <span class="k">V(full)</span>;
+get:  <span class="k">P(full)</span>;  P(cmtx); x = slot[head]; head++; V(cmtx); <span class="k">V(empty)</span>;</code></pre>
+<dl class="row">
+<dt>핵심 1</dt><dd><b>P(empty)를 mutex보다 먼저.</b> 순서를 바꾸면 버퍼가 꽉 찼을 때 생산자가 mutex를 쥔 채 잠듭니다. 그러면 다른 생산자는 mutex에서 막히고, 소비자가 칸을 비워도 그 생산자를 깨울 수 없습니다(교착). §6에서 직접 재현해 볼 수 있습니다.</dd>
+<dt>핵심 2</dt><dd><b>생산자 mutex와 소비자 mutex를 분리.</b> 생산자는 tail만, 소비자는 head만 건드리고, 같은 칸에 동시에 접근하지 않는다는 건 empty/full 카운트가 보장합니다. 그래서 넣기와 빼기가 병렬로 진행됩니다.</dd>
+<dt>검증</dt><dd><code>test_bbuf</code>: 생산자 16 × 소비자 4, 용량 1까지 → 유실 0, 중복 0, 끝난 뒤 permit 보존(empty=용량, full=0)</dd>
+</dl>
+</div>
+
+<div class="card semcard">
+<h3>② 전략 우편함 — 큐 3개를 세마포 하나로 기다리기 <span class="tag cnt">카운팅</span></h3>
+<dl class="row">
+<dt>위치</dt><dd><code>src/inbox.c</code></dd>
+<dt>문제</dt><dd>전략은 ① 내 주문의 체결/거절(ACK) ② 시계 틱·전량청산·종료(CTL) ③ 시세(MD) 중 <b>아무거나 하나라도</b> 오면 깨어나야 하고, 꺼낼 때는 ACK를 먼저 처리해야 합니다. 체결을 반영하기 전에 새 시세로 판단하면 이미 들어간 포지션을 모른 채 중복 진입할 수 있기 때문입니다.</dd>
+<dt>해법</dt><dd>세 큐의 원소 총수를 세는 카운팅 세마포 <code>items</code>를 하나 더 둡니다.</dd>
+</dl>
+<pre><code><span class="c">// 생산자 (누구든)</span>
+bbuf_put(q_x, ev);  <span class="k">V(items)</span>;          <span class="c">// 넣은 다음에 알린다</span>
+<span class="c">// 소비자 (전략 스레드 1개)</span>
+<span class="k">P(items)</span>;
+if (tryget(ack)) …  else if (tryget(ctl)) …  else tryget(md);   <span class="c">// 반드시 하나는 성공</span></code></pre>
+<dl class="row">
+<dt>왜 맞나</dt><dd>생산자는 넣기를 끝낸 뒤 V를 하고, 소비자는 하나뿐입니다. 그래서 P(items)가 통과하면 적어도 한 큐에 원소가 있고, 다른 누가 가져갈 수도 없습니다. 셋 다 실패하면 가정이 깨진 것이니 즉시 abort 합니다(실행 중 0회).</dd>
+<dt>시세 버리기</dt><dd>시세 큐는 꽉 차면 <code>tryput</code>이 실패하고 버린 수를 셉니다. 느린 전략 때문에 md_receiver가 막혀서 다른 전략까지 시세를 못 받는 일을 막습니다. ACK는 절대 버리지 않습니다(⑥).</dd>
+</dl>
+</div>
+
+<div class="card semcard">
+<h3>③ 포지션 장부 — 쓰기 스레드가 굶지 않는 Readers-Writers 락 <span class="tag bin">이진 ×3</span></h3>
+<dl class="row">
+<dt>위치</dt><dd><code>src/rwlock.c</code>, <code>src/book.c</code></dd>
+<dt>문제</dt><dd>장부는 상태 모니터, 전량청산 확인, 결과 검증이 자주 읽고, 체결 반영과 잔고 폴러만 가끔 씁니다. 읽기끼리는 동시에 해도 되지만, 단순한 "첫 reader가 잠그고 마지막 reader가 푼다" 방식은 reader가 끊임없이 오면 <b>writer(체결 반영)가 영원히 못 들어갑니다</b>.</dd>
+<dt>해법</dt><dd>Downey, <i>The Little Book of Semaphores</i> §4.2.6 "No-starve readers-writers". 회전문 <code>turnstile</code>을 둡니다.</dd>
+</dl>
+<pre><code>reader:  P(turnstile); V(turnstile);                 <span class="c">// 회전문을 통과만 한다</span>
+         P(rmtx); if (++readers == 1) P(room_empty); V(rmtx);
+         … 읽기 …
+         P(rmtx); if (--readers == 0) V(room_empty); V(rmtx);
+writer:  <span class="k">P(turnstile)</span>;                                <span class="c">// 새 reader 유입 차단</span>
+         P(room_empty);  … 쓰기 …  V(turnstile); V(room_empty);</code></pre>
+<dl class="row">
+<dt>검증</dt><dd><code>test_rwlock</code>: reader 8개가 쉬지 않는 중에도 writer 1만 회 이상 진입, 최대 대기 약 0.1ms, 상호배제 위반 0, 찢어진 읽기 0, reader 동시 진입 최대 8명</dd>
+</dl>
+</div>
+
+<div class="card semcard">
+<h3>④ 레이트 리미터 — "1초에 최대 C건"을 증명 가능하게 <span class="tag cnt">카운팅</span><span class="tag ipc">named</span></h3>
+<dl class="row">
+<dt>위치</dt><dd><code>src/ratelimit.c</code> · 시세용 <code>rl_md</code>(8/s, feeder 프로세스와 공유), 주문/잔고용 <code>rl_trade</code>(10/s)</dd>
+<dt>문제</dt><dd>KIS는 초당 요청 수를 넘기면 <code>EGW00201</code>로 거절합니다.</dd>
+<dt>해법</dt><dd>permit C개짜리 카운팅 세마포를 둡니다. 요청 전에 P 하고, <b>응답을 받은 시각 + 1초(+50ms 여유)</b>가 지나면 refill 스레드가 V 합니다.</dd>
+<dt>보장</dt><dd>같은 permit을 쓰는 연속된 두 요청은 <code>다음 시작 ≥ 이전 응답 + 1초 ≥ 이전 서버 도착 + 1초</code>를 만족합니다. 그래서 서버가 보는 어떤 1초 구간에도 permit 하나당 1건, 전체로는 <b>최대 C건</b>입니다. 흔한 "1초마다 C개 채워주기" 방식은 경계에서 순간적으로 2C건이 몰릴 수 있습니다.</dd>
+</dl>
+<div class="diagram" style="margin:10px 0">
+<svg viewBox="0 0 860 210" role="img" aria-label="레이트 리미터 타임라인">
+  <text x="10" y="20" font-size="13" font-weight="700" fill="var(--fg)">이 프로젝트: permit을 "응답 + 1초"까지 붙잡는다 (C=3)</text>
+  <g font-size="11" fill="var(--muted)"><text x="10" y="52">permit 1</text><text x="10" y="80">permit 2</text><text x="10" y="108">permit 3</text></g>
+  <g>
+    <rect x="80" y="40" width="40" height="16" rx="3" fill="var(--accent)"/><rect x="120" y="40" width="300" height="16" rx="3" fill="var(--accent-soft)" stroke="var(--accent)" stroke-dasharray="3 3"/>
+    <rect x="425" y="40" width="30" height="16" rx="3" fill="var(--accent)"/><rect x="455" y="40" width="300" height="16" rx="3" fill="var(--accent-soft)" stroke="var(--accent)" stroke-dasharray="3 3"/>
+    <rect x="90" y="68" width="60" height="16" rx="3" fill="var(--accent)"/><rect x="150" y="68" width="300" height="16" rx="3" fill="var(--accent-soft)" stroke="var(--accent)" stroke-dasharray="3 3"/>
+    <rect x="455" y="68" width="40" height="16" rx="3" fill="var(--accent)"/>
+    <rect x="100" y="96" width="30" height="16" rx="3" fill="var(--accent)"/><rect x="130" y="96" width="300" height="16" rx="3" fill="var(--accent-soft)" stroke="var(--accent)" stroke-dasharray="3 3"/>
+    <rect x="435" y="96" width="50" height="16" rx="3" fill="var(--accent)"/>
+  </g>
+  <g font-size="11" fill="var(--muted)"><rect x="560" y="70" width="14" height="10" fill="var(--accent)"/><text x="580" y="79">요청 진행 중</text>
+  <rect x="560" y="90" width="14" height="10" fill="var(--accent-soft)" stroke="var(--accent)" stroke-dasharray="2 2"/><text x="580" y="99">응답 후 1초 대기 (permit 미반납)</text></g>
+  <text x="10" y="150" font-size="13" font-weight="700" fill="var(--fg)">흔한 토큰 버킷: 1초마다 3개 충전 → 경계에서 몰림</text>
+  <line x1="80" y1="190" x2="760" y2="190" stroke="var(--border)"/>
+  <line x1="420" y1="160" x2="420" y2="196" stroke="var(--muted)" stroke-dasharray="3 3"/><text x="424" y="172" font-size="11" fill="var(--muted)">충전 시각</text>
+  <g fill="var(--bad)"><circle cx="395" cy="182" r="5"/><circle cx="405" cy="182" r="5"/><circle cx="414" cy="182" r="5"/><circle cx="426" cy="182" r="5"/><circle cx="435" cy="182" r="5"/><circle cx="444" cy="182" r="5"/></g>
+  <text x="470" y="186" font-size="12" fill="var(--bad)" font-weight="700">50ms 안에 6건 = 한도 3의 2배 → EGW00201</text>
+</svg>
+</div>
+<dl class="row">
+<dt>예산 분할</dt><dd>시세(8/s)와 주문(10/s)의 permit을 따로 둡니다(합 18 &lt; 서버 20). 하나를 같이 쓰면 시세 폴링이 permit을 다 써버려서 정작 중요한 주문이 굶습니다.</dd>
+<dt>실측</dt><dd>같은 60초 조건에서 <b>ON: EGW00201 0건</b> / <b>OFF: 주문 303건 중 153건 거절, 서버 거절 합계 278건</b>. OFF에서는 거절당한 전략이 매 틱마다 다시 시도하면서 요청이 불어납니다(재시도 폭주).</dd>
+</dl>
+</div>
+
+<div class="card semcard">
+<h3>⑤ 계좌 한도 <code>exposure</code> — 읽고 판단하지 말고 "예약"하라 <span class="tag cnt">카운팅 (초기값 3)</span></h3>
+<dl class="row">
+<dt>위치</dt><dd><code>src/strategy.c</code> <code>try_entry</code></dd>
+<dt>문제</dt><dd>"계좌 전체 롱은 3계약까지"라는 한도가 있습니다. 전략 A와 B가 동시에 장부를 읽고 "지금 2계약 &lt; 3, 진입 가능"이라고 판단하면 둘 다 진입해서 4계약이 됩니다. 확인과 실행 사이에 상태가 바뀌는 <b>TOCTOU</b> 경쟁입니다. RW 락으로 장부를 읽는 것만으로는 막을 수 없습니다.</dd>
+<dt>해법</dt><dd>진입 직전에 <code>trywait(exposure)</code> 합니다. <b>"남았는지 확인 + 하나 차감"이 원자적</b>이라 둘이 동시에 마지막 한 자리를 가져가는 일이 구조적으로 불가능합니다.</dd>
+</dl>
+<pre><code>if (!<span class="k">trywait(exposure)</span>) { risk_blocked++; return; }   <span class="c">// 자리가 없으면 진입 안 함</span>
+if (send_order(BUY)) holding++;
+else <span class="k">V(exposure)</span>;                                       <span class="c">// 주문을 못 냈으면 자리 반납</span>
+<span class="c">// 진입 거절 ACK → V(exposure),  청산 체결 ACK → V(exposure)</span></code></pre>
+<dl class="row">
+<dt>검증</dt><dd>종료 후 <b>permit 보존</b>을 검사합니다: 남은 permit + 전략들이 쥔 permit = 3. 실행마다 "한도 때문에 진입 보류" 수백 회가 기록되는데, 한도는 한 번도 넘지 않았습니다.</dd>
+</dl>
+</div>
+
+<div class="card semcard">
+<h3>⑥ 미체결 주문 한도 <code>inflight</code> — 교착이 없다는 증명의 열쇠 <span class="tag cnt">카운팅 (전략마다 K=2)</span></h3>
+<dl class="row">
+<dt>문제</dt><dd>워커와 거래소는 ACK를 전략 우편함에 넣습니다. ACK 큐가 꽉 차서 워커가 거기서 잠들면, 전략은 주문 큐에서 워커를 기다리고 워커는 ACK 큐에서 전략을 기다리는 <b>순환 대기</b>가 생길 수 있습니다. 게다가 워커는 registry 락을 쥔 채 ACK를 넣습니다(⑦).</dd>
+<dt>해법</dt><dd>전략은 주문을 내기 전에 <code>trywait(inflight)</code> 하고, <b>그 주문의 최종 ACK(체결/거절)를 소비한 뒤에야</b> V 합니다.</dd>
+<dt>증명</dt><dd>주문 하나는 ACK를 최대 2개(접수+체결, 또는 거절 1개) 만듭니다. 소비되지 않은 ACK가 남아 있는 주문은 permit을 쥐고 있으므로 K개 이하입니다. 따라서 큐에 쌓인 ACK ≤ 2K = 4 &lt; 용량 64이고, <b>ACK 넣기는 절대 막히지 않습니다</b>. 그래서 <code>tryput</code>으로 구현했고, 실패하면 불변식 위반으로 abort 합니다(실행 중 0회). 이 성질은 전략 로직이 맞다는 가정 없이 세마포 하나만으로 성립합니다.</dd>
+</dl>
+</div>
+
+<div class="card semcard">
+<h3>⑦ 주문 레지스트리 — "등록 전에 체결이 먼저 도착"하는 경쟁 <span class="tag bin">이진</span></h3>
+<dl class="row">
+<dt>위치</dt><dd><code>src/registry.c</code></dd>
+<dt>문제</dt><dd>체결 통보에는 브로커 주문번호(ODNO)만 있습니다. 거래소는 주문을 받는 즉시 처리를 시작하므로, 워커가 ODNO를 받아 표에 등록하기 <b>전에</b> 체결이 먼저 도착할 수 있습니다. 그냥 두면 체결이 주인을 못 찾고 사라집니다.</dd>
+<dt>해법</dt><dd>주인을 못 찾은 체결은 버리지 않고 <b>park</b>(보관)합니다. 워커는 <b>한 임계구역 안에서</b> ① 등록 ② 접수 ACK 전달 ③ park 목록 확인을 모두 합니다.</dd>
+</dl>
+<pre><code>reg_bind (워커):   P(mtx); 등록; push(RECEIVED); park에서 내 체결 회수; V(mtx); 회수한 체결 전달
+reg_route (거래소): P(mtx); 찾으면 → 엔트리 삭제 후 전달 / 못 찾으면 → park; V(mtx)</code></pre>
+<dl class="row">
+<dt>왜 맞나</dt><dd>두 동작이 같은 mtx로 직렬화되므로 순서는 둘 중 하나입니다. 거래소가 먼저면 park에 남고 워커가 봅니다. 워커가 먼저면 거래소가 엔트리를 찾습니다. <b>둘 다 서로를 못 보는 경우가 없습니다.</b> 접수 ACK를 락 안에서 넣으므로 체결이 접수보다 먼저 전략에 도착하지도 않습니다.</dd>
+<dt>검증</dt><dd><code>test_registry</code> 2만 건: 유실·중복·순서 위반 0, park 경로 실제 실행 확인. 엔진에서도 즉시 체결 비율(<code>--fast-fill</code>)만큼 이 경로를 탑니다.</dd>
+</dl>
+</div>
+
+<div class="card semcard">
+<h3>⑧ 프로세스 간: 시세 링과 토큰 준비 신호 <span class="tag ipc">named</span><span class="tag cnt">카운팅</span></h3>
+<dl class="row">
+<dt>시세 링</dt><dd>feeder(생산자 1)와 md_receiver(소비자 1)가 공유메모리 위 링버퍼를 씁니다. <code>md.e</code>(1024)와 <code>md.f</code>(0) 두 카운팅 세마포만 쓰고 <b>mutex는 일부러 안 씁니다</b>. 이유는 §8에 있습니다.</dd>
+<dt>tok_ready</dt><dd>초기값 0인 일회성 신호입니다. KIS 접근 토큰은 엔진만 발급하므로(1분 1회 제한), feeder는 시작하자마자 <code>P(tok_ready)</code>로 잠들어 있다가 엔진이 토큰을 공유메모리에 쓰고 V 하면 깨어납니다. 조건변수 없이 "준비되면 알려줘"를 표현한 것입니다.</dd>
+<dt>그 밖</dt><dd>로그 CSV 한 행(<code>csv_mtx</code>), 모의 거래소 원장(<code>ledger_mtx</code>)은 짧은 이진 세마포로 보호합니다.</dd>
+</dl>
+</div>
+
+<h3>전체 목록</h3>
+<div class="tblwrap"><table>
+<tr><th>세마포</th><th>종류</th><th>초기값</th><th>P</th><th>V</th></tr>
+<tr><td><code>md.e / md.f</code></td><td><span class="tag ipc">named</span>카운팅</td><td>1024 / 0</td><td>feeder / md_receiver</td><td>md_receiver / feeder</td></tr>
+<tr><td><code>rl_md</code></td><td><span class="tag ipc">named</span>카운팅</td><td>8</td><td>feeder</td><td>엔진 refill</td></tr>
+<tr><td><code>tok_ready</code></td><td><span class="tag ipc">named</span>신호</td><td>0</td><td>feeder</td><td>엔진 main</td></tr>
+<tr><td><code>order_q</code> ×4</td><td>카운팅+이진</td><td>64/0/1/1</td><td>전략·워커</td><td>워커·전략</td></tr>
+<tr><td><code>exch_q</code> ×4</td><td>카운팅+이진</td><td>256/0/1/1</td><td>워커·거래소</td><td>거래소·워커</td></tr>
+<tr><td><code>inbox[i]</code> ×13 (×8 전략)</td><td>카운팅+이진</td><td>큐 3개 + items 0</td><td>전략</td><td>md_receiver·워커·거래소·clock</td></tr>
+<tr><td><code>rl_trade</code></td><td>카운팅</td><td>10</td><td>워커·nav</td><td>refill</td></tr>
+<tr><td><code>exposure</code></td><td>카운팅</td><td>3</td><td>전략(진입)</td><td>전략(청산 체결/진입 실패)</td></tr>
+<tr><td><code>inflight[i]</code> (×8)</td><td>카운팅</td><td>2</td><td>전략(주문 전)</td><td>전략(최종 ACK 소비)</td></tr>
+<tr><td><code>registry.mtx</code></td><td>이진</td><td>1</td><td colspan="2">워커·거래소</td></tr>
+<tr><td><code>book</code> ×3</td><td>이진 (RW 락)</td><td>1/1/1</td><td colspan="2">reader·writer</td></tr>
+<tr><td><code>ledger_mtx, csv_mtx</code></td><td>이진</td><td>1</td><td colspan="2">거래소·nav / 전략</td></tr>
+</table></div>
+</section>
+
+<!-- 6 -->
+<section id="s6">
+<h2><span class="n">6</span>직접 해보기: 유한 버퍼와 P 순서</h2>
+<p class="lead">용량 4짜리 버퍼입니다. 생산자와 소비자를 아무 순서로나 도착시켜 보세요. 가득 찼을 때 생산자가, 비었을 때 소비자가 잠들고 상대가 깨워 줍니다. 아래 스위치를 켜면 <b>mutex를 하나로 합치고 P(mutex)를 먼저 하는 잘못된 코드</b>가 되어, 교착 상태를 직접 만들 수 있습니다.</p>
+<div class="card">
+<div class="sim">
+<div>
+  <div class="slots" id="slots"></div>
+  <div class="semvals">
+    <div class="sv">empty<b id="vEmpty">4</b></div><div class="sv">full<b id="vFull">0</b></div>
+    <div class="sv" id="mtxBox">mutex<b id="vMtx">1</b></div>
+  </div>
+  <div class="waitq" id="waitq">대기 중: 없음</div>
+  <div class="stepper">
+    <button class="primary" id="bProd">생산자 도착 (put)</button>
+    <button class="primary" id="bCons">소비자 도착 (get)</button>
+    <button id="bReset">초기화</button>
+  </div>
+  <label class="tg"><input type="checkbox" id="bad"> 잘못된 코드: <code>P(mutex); P(empty); …</code> (mutex 1개 공유)</label>
+  <p style="font-size:13.5px;color:var(--muted)">교착 재현: 스위치를 켜고 → 생산자를 5번 도착 → 소비자 도착. 다섯 번째 생산자가 mutex를 쥔 채 empty에서 잠들어서, 소비자는 mutex를 영원히 얻지 못합니다.</p>
+</div>
+<div class="log" id="simlog" aria-live="polite"></div>
+</div>
+</div>
+</section>
+
+<!-- 7 -->
+<section id="s7">
+<h2><span class="n">7</span>교착 상태가 생기지 않는 이유</h2>
+<p class="lead">교착 상태의 네 가지 조건(상호배제, 점유 대기, 비선점, 순환 대기) 중 하나만 깨면 됩니다. 이 엔진은 아래 세 가지 규칙으로 깹니다.</p>
+<div class="card">
+<h3 style="margin-top:0">규칙 1. 이진 세마포(mutex)를 쥔 채 다른 것을 블로킹으로 기다리지 않는다</h3>
+<div class="tblwrap"><table>
+<tr><th>이진 세마포</th><th>쥐고 있는 동안 하는 일</th></tr>
+<tr><td>bbuf pmtx/cmtx</td><td>memcpy + 인덱스 증가</td></tr>
+<tr><td>registry.mtx</td><td>해시표 조작 + ACK 넣기(<b>tryput</b>, 규칙 2 때문에 절대 막히지 않음)</td></tr>
+<tr><td>rwlock 내부, ledger, csv</td><td>필드 몇 개 갱신 / 한 줄 쓰기</td></tr>
+</table></div>
+<p>→ mutex에 대해서는 <b>점유 대기</b> 조건이 성립하지 않습니다.</p>
+<h3>규칙 2. 막힐 수 있는 put은 증명으로 없앤다</h3>
+<p>ACK 넣기는 ⑥ inflight 논증으로 공간이 항상 있습니다. 시세 넣기는 꽉 차면 버립니다. 그래서 전략 방향으로는 아무도 블로킹되지 않습니다.</p>
+<h3>규칙 3. 블로킹 대기는 한 방향으로만 흐른다</h3>
+<pre><code>전략 ──(order_q 빈칸)──▶ 워커 ──(exch_q 빈칸)──▶ 거래소 ──▶ (블로킹 대기 없음)
+                          └──(rl_trade permit)──▶ refill ──▶ (시간만 기다림)
+md_receiver ──(md 링)──▶ feeder ──(rl_md permit)──▶ refill</code></pre>
+<p style="margin-bottom:0">화살표 끝의 스레드는 화살표 시작 쪽을 블로킹으로 기다리지 않습니다(워커와 거래소가 전략에게 보내는 것은 전부 tryput). 그래서 wait-for 그래프에 사이클이 없고, <b>순환 대기</b>가 성립하지 않습니다.</p>
+</div>
+<div class="callout"><b>종료할 때도 같은 원리입니다.</b> feeder → md_receiver → nav/clock → 전략 → 워커 → 거래소 → refill 순서로 닫습니다. 각 단계에서 기다리는 쪽이 의존하는 상대는 아직 살아 있습니다. 예를 들어 워커가 rl_trade에서 잠들어 있어도 refill이 마지막까지 살아 있으므로 반드시 깨어납니다. 종료 신호(poison)는 소비자 수만큼 넣습니다. (<code>src/engine.c</code> 머리 주석)</div>
+</section>
+
+<!-- 8 -->
+<section id="s8">
+<h2><span class="n">8</span>프로세스 분리와 장애 격리</h2>
+<div class="grid2">
+<div class="card">
+<h3 style="margin-top:0">fork가 아니라 posix_spawn</h3>
+<p>엔진은 이미 멀티스레드입니다. 이 상태에서 fork 하면 자식에게는 스레드 하나만 복제되는데, 다른 스레드가 쥐고 있던 락은 <b>잠긴 채로</b> 복사됩니다. 그 락을 풀어줄 스레드는 자식에게 없습니다.</p>
+<p style="margin-bottom:0">그래서 <code>posix_spawn</code>(fork+exec)으로 새 프로그램을 시작하고, 자식은 핸들을 상속받는 대신 <b>이름으로</b> <code>shm_open</code>, <code>sem_open</code>을 다시 엽니다. named 세마포가 꼭 필요한 이유가 이것입니다.</p>
+</div>
+<div class="card">
+<h3 style="margin-top:0">프로세스 간에는 mutex를 쓰지 않는다</h3>
+<p>이진 세마포를 쥔 프로세스가 <code>kill -9</code> 당하면 그 세마포는 영원히 0으로 남고, 상대 프로세스까지 멈춥니다. pthread의 robust mutex 같은 회복 장치가 세마포에는 없습니다.</p>
+<ul style="margin:0;padding-left:20px">
+<li>링은 SPSC라 mutex가 필요 없습니다. 카운팅 세마포는 생산자가 중간에 죽어도 "칸 하나가 줄어드는" 정도로만 손상됩니다</li>
+<li>레이트 리미터 반납 슬롯, 모의 서버 카운터는 lock-free CAS로 처리합니다</li>
+<li>KIS 토큰은 이중 버퍼 + 버전 번호로 처리합니다(쓰는 쪽은 엔진 하나뿐)</li>
+</ul>
+</div>
+</div>
+<div class="callout ok"><b>장애 복구 실측</b> — 실행 중 feeder를 <code>kill -9</code>로 두 번 죽였습니다. 엔진의 main 스레드가 SIGCHLD로 감지하고, feeder가 쥐고 있던 permit을 회수한 뒤 다시 띄웠습니다(각각 약 4ms). 새 feeder는 이름으로 같은 링과 세마포에 다시 붙었고, 매매가 이어졌고, 불변식은 전부 통과했습니다. 반대로 엔진이 죽으면 feeder는 부모 pid가 바뀐 것을 보고 스스로 종료합니다.</div>
+</section>
+
+<!-- 9 -->
+<section id="s9">
+<h2><span class="n">9</span>시그널과 종료</h2>
+<ol class="flow">
+<li>스레드를 하나도 만들기 <b>전에</b> main이 SIGINT, SIGTERM, SIGALRM, SIGCHLD를 막습니다(<code>pthread_sigmask</code>). 이후 만든 스레드는 이 마스크를 물려받습니다.</li>
+<li>그래서 시그널은 <code>sigwait</code> 중인 main에서만 <b>동기적으로</b> 처리됩니다. 세마포를 쥔 임의의 스레드가 비동기 시그널 핸들러에 끌려가는 일이 없습니다.</li>
+<li>SIGCHLD → feeder 재기동. SIGALRM(실행 시간 종료)이나 Ctrl+C → 종료 절차(§7) 시작.</li>
+<li>feeder에게는 막힌 마스크를 물려주지 않습니다(<code>POSIX_SPAWN_SETSIGMASK</code>). feeder는 Ctrl+C를 무시하고, SIGTERM 핸들러를 <code>SA_RESTART</code> 없이 답니다. 그래서 <code>sem_wait</code>에서 잠들어 있다가 EINTR로 깨어나 종료할 수 있습니다.</li>
+</ol>
+</section>
+
+<!-- 10 -->
+<section id="s10">
+<h2><span class="n">10</span>무엇으로 검증했나</h2>
+<p class="lead"><code>make check</code> 하나로 아래 앞쪽 일곱 줄이 전부 실행됩니다. Apple M4, macOS 기준입니다.</p>
+<div class="tblwrap"><table>
+<tr><th>항목</th><th>방법</th><th>결과</th></tr>
+<tr><td>유한 버퍼</td><td><code>test_bbuf</code> 생산자×소비자 최대 16×4, 용량 1까지</td><td>유실 0 · 중복 0 · FIFO 유지 · permit 보존</td></tr>
+<tr><td>RW 락</td><td><code>test_rwlock</code> reader 8 + writer 2</td><td>상호배제 위반 0 · 찢어진 읽기 0 · writer 최대 대기 약 0.1ms</td></tr>
+<tr><td>레이트 리미터</td><td><code>test_ratelimit</code> 스레드 16, 모든 슬라이딩 구간 전수 검사</td><td>한도 초과 구간 0 · 처리량 이론 상한의 약 90%</td></tr>
+<tr><td>우편함</td><td><code>test_inbox</code> 생산자 5</td><td>ACK·CTL 유실 0 · 시세 받음+버림=보냄</td></tr>
+<tr><td>레지스트리</td><td><code>test_registry</code> 2만 건</td><td>유실·중복·순서 위반 0, park 경로 실행</td></tr>
+<tr><td>프로세스 간</td><td><code>test_ipc</code></td><td>20만 건 순서 보존(약 150만 msg/s) · 프로세스 3개 공유 permit 한도 준수</td></tr>
+<tr><td>데이터 경쟁</td><td>ThreadSanitizer: 테스트 5개 + 엔진 20초</td><td>보고 0</td></tr>
+<tr><td>TSan 음성 대조군</td><td>생산자 mutex를 일부러 뺀 빌드</td><td>TSan이 즉시 data race 보고 → 검사기가 실제로 동작함</td></tr>
+<tr><td>엔진 60초</td><td><code>make demo</code></td><td>주문 91 · 체결 90 · EGW00201 0 · 불변식 8개 통과</td></tr>
+<tr><td>레이트 리미터 OFF</td><td><code>make demo-norl</code></td><td>303건 중 153건 거절 (EGW00201 151)</td></tr>
+<tr><td>워커 확장성</td><td><code>make bench</code> 호출당 20ms</td><td>워커 1→16개: 15.2배 (이론 16배)</td></tr>
+<tr><td>실서버</td><td><code>--mode kis-dry --inst A01612</code></td><td>KIS 토큰 발급 · 실시세 조회 · 속도 제한 에러 0</td></tr>
+</table></div>
+<h3>엔진이 끝날 때마다 스스로 검사하는 불변식</h3>
+<ul style="padding-left:20px">
+<li><b>exposure permit 보존</b>: 남은 permit + 보유 = 초기값</li>
+<li><b>inflight permit 전부 반납</b>: 전략마다 K개</li>
+<li><b>ACK 큐 overflow = 0</b>: 용량 논증이 실제로 성립</li>
+<li><b>체결 유실 없음</b>: 장부에 반영된 체결 수 = 전략에 전달된 체결 수</li>
+<li><b>registry 미해결 park = 0</b></li>
+<li><b>거래소 원장 순포지션 = 내부 장부 순포지션</b> (독립된 두 장부의 대조)</li>
+<li><b>전량청산 후 순포지션 = 0</b></li>
+<li><b>레이트 리미터 ON이면 EGW00201 = 0</b></li>
+</ul>
+<div class="callout warn"><b>TSan 주석에 대해</b> — macOS용 ThreadSanitizer는 <code>pthread_mutex</code>는 가로채지만 <code>sem_wait</code>/<code>sem_post</code>는 가로채지 않습니다(런타임 라이브러리를 <code>nm</code>으로 확인). 그러면 세마포로 정상 보호된 코드도 경쟁으로 보고됩니다. 그래서 TSan 빌드일 때만 세마포 래퍼에 "post 직전 release, wait 직후 acquire" 주석을 넣었습니다. POSIX가 보장하는 의미를 그대로 알려주는 것뿐입니다. 이 주석이 진짜 버그까지 가리는 건 아닌지는 음성 대조군으로 확인했습니다.</div>
+</section>
+
+<!-- 11 -->
+<section id="s11">
+<h2><span class="n">11</span>macOS에서 실제로 부딪힌 것들</h2>
+<div class="tblwrap"><table>
+<tr><th>문제</th><th>대응</th></tr>
+<tr><td><code>sem_init</code> 미지원 (ENOSYS)</td><td>전부 <code>sem_open</code>. 내부용은 만든 직후 unlink</td></tr>
+<tr><td><code>sem_timedwait</code>, <code>sem_getvalue</code> 없음</td><td>시간 기반 V()는 refill 스레드가 하고, 중단은 시그널(EINTR) + stop 플래그로 합니다. 값 확인은 trywait로 빼면서 셉니다(종료 후 검증에서만)</td></tr>
+<tr><td>named 세마포가 파일 디스크립터를 하나씩 씀</td><td>시작할 때 <code>RLIMIT_NOFILE</code>을 올림</td></tr>
+<tr><td>SIGCHLD를 막아 둬도 <code>sigwait</code>에 안 옴</td><td>기본 동작이 "무시"인 시그널은 커널이 발생 즉시 버립니다. 빈 핸들러를 달아 해결했습니다(장애 복구 테스트에서 발견)</td></tr>
+<tr><td>TSan이 세마포를 모름</td><td>§10 주석 + 음성 대조군</td></tr>
+<tr><td>세마포 이름 31자 제한</td><td><code>/ig&lt;pid&gt;.md.e</code> 형식</td></tr>
+</table></div>
+</section>
+
+<!-- 12 -->
+<section id="s12">
+<h2><span class="n">12</span>예상 질문과 답변</h2>
+<p class="lead">시스템·병렬 프로그래밍 관점에서 나올 만한 질문들입니다.</p>
+
+<details><summary>왜 조건변수(pthread_cond) 대신 세마포를 썼나요?</summary>
+<p>이 시스템의 대기는 대부분 "개수가 있는 자원"입니다. 빈 칸 수, 초당 요청 수, 계좌 한도, 미체결 주문 수가 그렇습니다. 카운팅 세마포는 이 개수 자체를 상태로 들고 있어서 조건 검사와 대기가 한 연산에 들어 있고, spurious wakeup이나 lost wakeup을 따로 신경 쓸 필요가 없습니다. 예를 들어 V가 P보다 먼저 와도 값으로 남습니다. 또 named 세마포는 프로세스 간에 그대로 쓸 수 있습니다.</p></details>
+
+<details><summary>mutex 대신 이진 세마포를 쓰면 단점은 없나요?</summary>
+<p>있습니다. 세마포에는 소유자가 없어서 잘못된 스레드가 V를 해도 막아 주지 않고, 우선순위 상속과 robust 모드도 없습니다. 그래서 이진 세마포는 memcpy 수준의 짧은 임계구역에서만, 다른 대기 없이 쓰도록 제한했습니다. 프로세스 간에는 이진 세마포를 아예 쓰지 않았습니다(죽은 프로세스가 영원히 잠근 채 남는 문제 때문). 통일한 이유는 동기화 전체를 P/V 하나의 모델로 논증하기 위해서입니다.</p></details>
+
+<details><summary>유한 버퍼에서 P(empty)와 P(mutex) 순서를 바꾸면?</summary>
+<p>버퍼가 꽉 찼을 때 생산자가 mutex를 쥔 채 empty에서 잠듭니다. 소비자는 mutex를 못 얻어서 칸을 비울 수 없으니 교착입니다. 이 해설서 §6에서 재현할 수 있습니다. 참고로 이 구현은 생산자 mutex와 소비자 mutex가 분리돼 있어서, 순서를 바꿔도 생산자끼리만 막히고 소비자는 진행됩니다. 그래도 규칙대로 P(empty)를 먼저 합니다.</p></details>
+
+<details><summary>생산자와 소비자 mutex를 나눠도 안전한 근거는요?</summary>
+<p>① 읽히는 칸은 다 쓰인 칸입니다. 생산자 A가 칸 k를 쓰는 동안 pmtx를 쥐므로, 다음 생산자 B는 A가 다 쓴 뒤에야 칸 k+1을 받습니다. B가 먼저 V(full)을 해서 소비자가 칸 k를 읽더라도, A의 기록은 A의 V(pmtx) → B의 P(pmtx) → B의 V(full) → 소비자의 P(full) 순서로 happens-before가 이어져 있습니다. ② 쓰이는 칸은 다 읽힌 칸입니다. 읽기는 cmtx로 칸 순서대로 하나씩 일어나고, V(empty)는 읽기가 끝난 뒤에만 합니다. 그래서 n번째 생산자가 empty를 얻었다면, 덮어쓸 칸 n−cap은 이미 읽혔습니다.</p></details>
+
+<details><summary>Readers-Writers에서 writer 기아는 어떻게 막았나요?</summary>
+<p>회전문(turnstile) 세마포를 둡니다. reader는 회전문을 잡았다 바로 놓으며 통과만 하고, writer는 회전문을 쥔 채 room_empty를 기다립니다. writer가 회전문을 쥐는 순간 새 reader가 막히므로, writer는 이미 방 안에 있던 reader들만 기다리면 됩니다. 테스트에서 reader 8개가 쉬지 않는 중에도 writer 최대 대기가 약 0.1ms였습니다.</p></details>
+
+<details><summary>레이트 리미터가 정말로 1초 한도를 지킨다는 근거는요?</summary>
+<p>permit을 응답 받은 시각에서 1초 뒤에 돌려줍니다. 같은 permit을 쓰는 다음 요청의 시작은 이전 요청의 서버 도착보다 1초 이상 늦습니다(도착 ≤ 응답). 그래서 어떤 1초 구간에도 permit 하나당 요청은 최대 1건이고, permit이 C개뿐이니 최대 C건입니다. 테스트에서는 모든 요청 시작 시각을 기록해서 모든 슬라이딩 구간을 전수 검사했고, 프로세스 3개가 permit을 공유하는 경우도 검사했습니다.</p></details>
+
+<details><summary>멀티스레드로 실제로 무엇이 빨라졌나요?</summary>
+<p>병목은 CPU가 아니라 브로커 왕복(수십 ms)과 초당 한도입니다. 워커 여러 개가 I/O 대기를 겹치므로 주문 처리량이 늘어납니다(1→16개 15.2배). 반대로 전략 계산은 마이크로초 단위라서 전략 스레드를 나눈 목적은 속도가 아니라 격리입니다. 큐 하나의 처리량은 초당 40~70만 건에서 포화하는데, macOS named 세마포는 연산마다 커널 호출이고 큐 하나가 직렬화 지점이기 때문입니다. 이 시스템의 요구량(초당 수십 건)에는 충분합니다.</p></details>
+
+<details><summary>feeder를 왜 스레드가 아니라 프로세스로 뒀나요?</summary>
+<p>장애 격리와 재기동 때문입니다. 외부 네트워크와 라이브러리 쪽에서 크래시가 나도 포지션을 가진 엔진은 살아 있어야 합니다. 그리고 멀티스레드 상태에서 fork 하면 다른 스레드가 쥔 락이 잠긴 채 복제되므로, posix_spawn으로 새 프로그램을 띄우고 이름으로 세마포와 공유메모리에 다시 붙게 했습니다.</p></details>
+
+<details><summary>공유메모리에서 원자 변수(atomic)를 써도 되나요?</summary>
+<p>lock-free 원자 변수는 주소에 의존하지 않아서 서로 다른 프로세스가 같은 물리 메모리에 매핑해도 동작합니다. 시작할 때 <code>atomic_is_lock_free</code>로 확인합니다. 공유메모리에서 원자 변수는 통계 카운터와 CAS 슬롯(레이트 리미터 반납, 모의 서버)에만 쓰고, 대기는 전부 세마포로 합니다.</p></details>
+
+<details><summary>ThreadSanitizer 결과를 믿어도 되나요? 주석으로 숨긴 건 아닌가요?</summary>
+<p>주석은 세마포 래퍼 한 곳에만 있고, POSIX가 보장하는 sem_post → sem_wait 동기화를 그대로 표현합니다. 이게 버그를 가리지 않는다는 것을 확인하려고, 유한 버퍼에서 생산자 mutex 하나만 뺀 빌드를 만들었습니다. TSan이 즉시 data race를 보고합니다(<code>make tsan-negative</code>).</p></details>
+
+<details><summary>한계는 무엇인가요?</summary>
+<p>§13에 정리했습니다. 가장 큰 것은 실계좌 모드에서 KIS 실시간 체결 통보(WebSocket)를 연동하지 않아 접수 성공을 체결로 간주한다는 점입니다.</p></details>
+</section>
+
+<!-- 13 -->
+<section id="s13">
+<h2><span class="n">13</span>실행 방법 · 파일 지도 · 한계</h2>
+<pre><code>cd ignacio_c
+make            <span class="c"># bin/ignacio 빌드</span>
+make check      <span class="c"># 스트레스 테스트 → TSan → TSan 음성 대조군</span>
+make demo       <span class="c"># 모의 시장 60초</span>
+make demo-norl  <span class="c"># 같은 조건, 레이트 리미터 OFF</span>
+make bench      <span class="c"># 처리량 · 확장성</span>
+./bin/ignacio --mode kis-dry --inst A01612     <span class="c"># KIS 실시세 + 모의 체결</span>
+kill -9 $(pgrep -f "ignacio --role=feeder")   <span class="c"># 다른 터미널에서: 장애 복구 시연</span></code></pre>
+
+<div class="tblwrap"><table>
+<tr><th>파일</th><th>내용</th></tr>
+<tr><td><code>src/sem.c</code></td><td>named 세마포 래퍼, TSan 주석</td></tr>
+<tr><td><code>src/bbuf.c</code></td><td>유한 버퍼 (MPMC / SPSC)</td></tr>
+<tr><td><code>src/inbox.c</code></td><td>우선순위 우편함</td></tr>
+<tr><td><code>src/rwlock.c</code>, <code>src/book.c</code></td><td>Readers-Writers 락, 포지션 장부</td></tr>
+<tr><td><code>src/ratelimit.c</code>, <code>src/mock_server.c</code></td><td>레이트 리미터, 모의 서버 초당 한도</td></tr>
+<tr><td><code>src/registry.c</code></td><td>주문번호 표, park</td></tr>
+<tr><td><code>src/strategy.c</code></td><td>돌파 전략 스레드, exposure·inflight</td></tr>
+<tr><td><code>src/engine.c</code></td><td>워커·시세 분배·잔고·시계·리필 스레드, 종료 순서</td></tr>
+<tr><td><code>src/exchange.c</code></td><td>모의 주문 실행과 비동기 체결</td></tr>
+<tr><td><code>src/feeder.c</code></td><td>시세 수집 프로세스</td></tr>
+<tr><td><code>src/main.c</code></td><td>IPC 생성, posix_spawn, supervisor, 결과·불변식 검증</td></tr>
+<tr><td><code>src/kis.c</code></td><td>KIS REST (토큰, 현재가, 주문, 잔고)</td></tr>
+<tr><td><code>tests/</code>, <code>bench/</code></td><td>스트레스 테스트 6개, 벤치마크</td></tr>
+<tr><td><code>docs/DESIGN.md</code></td><td>이 해설서의 텍스트 버전 (증명 위주)</td></tr>
+</table></div>
+
+<h3>한계</h3>
+<ul style="padding-left:20px">
+<li><b>kis-live 체결</b>: KIS 실시간 체결 통보를 연동하지 않아 접수 성공을 주문가 체결로 간주합니다. KIS 잔고의 종목별 배열 파싱은 미구현이라, 순포지션 대조는 mock 모드에서만 합니다.</li>
+<li>실주문 모드는 장중에 직접 확인하지 않았습니다. 실서버로 확인한 것은 토큰 발급과 시세 조회까지입니다.</li>
+<li>큐 하나의 처리량은 초당 40~70만 건에서 포화합니다. 이 시스템에는 충분하지만 μs 단위 HFT 구조는 아닙니다.</li>
+<li>feeder가 링에 쓰는 도중 죽으면 링 칸 하나(1024칸 중)가 영구히 줄 수 있습니다. 데이터는 손상되지 않습니다.</li>
+<li>모의 시세의 손익은 랜덤워크 결과라 의미가 없습니다.</li>
+<li>Linux 빌드 설정은 넣었지만 직접 돌려보지는 않았습니다. 종목코드는 만기마다 바꿔야 합니다.</li>
+</ul>
+</section>
+
+<footer>Ignacio-C · <code>quan/st/ignacio_c</code> · 2026-11</footer>
+</div>
+
+<script>
+(function(){
+  /* 테마 */
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  try{var t=localStorage.getItem('igc-theme'); if(t) root.setAttribute('data-theme',t);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var dark=cur?cur==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=dark?'light':'dark'; root.setAttribute('data-theme',next);
+    try{localStorage.setItem('igc-theme',next);}catch(e){}
+  });
+
+  /* 단계별 흐름: 구조도 복제 */
+  var src=document.getElementById('arch'), dst=document.getElementById('arch2');
+  dst.innerHTML=src.innerHTML.replace(/id="(n_|e_)/g,'id="s$1').replace(/id="ar"/,'id="ar2"').replace(/url\(#ar\)/g,'url(#ar2)');
+  var steps=[
+    {n:['n_kis','n_feed'],e:['e_kis_feed'],t:'<b class="s">feeder 프로세스</b>가 <code>P(rl_md)</code>로 시세 조회 permit을 얻고 KIS(또는 모의 서버)에 현재가를 요청합니다. 응답을 받으면 <code>rl_release_deferred</code>로 "1초 뒤 반납"을 예약합니다. permit이 없으면 잠들어서, 초당 8건을 넘지 않습니다.'},
+    {n:['n_feed','n_ring'],e:['e_feed_ring'],t:'시세를 <b class="s">공유메모리 링</b>에 넣습니다. <code>tryput</code> = <code>trywait(md.e)</code> → 칸에 기록 → <code>V(md.f)</code>. 엔진이 느려서 링이 꽉 차면 기다리지 않고 버립니다(feeder가 엔진 때문에 멈추지 않게).'},
+    {n:['n_ring','n_md'],e:['e_ring_md'],t:'엔진의 <b class="s">md_receiver</b>가 <code>P(md.f)</code>에서 깨어나 시세를 꺼내고 <code>V(md.e)</code>로 칸을 돌려줍니다. 생산자와 소비자가 하나씩이라(SPSC) mutex가 없습니다. 측정된 IPC 포함 지연은 p50 약 88μs입니다.'},
+    {n:['n_md','n_strat'],e:['e_md_strat'],t:'md_receiver가 같은 시세를 <b class="s">전략 8개의 우편함</b>에 하나씩 넣고(<code>tryput</code> + <code>V(items)</code>), 전략 스레드는 <code>P(items)</code>에서 깨어납니다. 우편함이 꽉 찬 느린 전략에게는 버리고 다음 전략으로 넘어갑니다.'},
+    {n:['n_strat'],e:[],t:'<b class="s">전략</b>이 최근 N봉 최고가 돌파를 확인합니다. 진입하기 전에 ① <code>trywait(exposure)</code>로 계좌 한도 한 자리를 원자적으로 예약하고 ② <code>trywait(inflight)</code>로 미체결 주문 자리를 얻습니다. 둘 중 하나라도 실패하면 주문하지 않고, 이미 얻은 자리는 돌려줍니다.'},
+    {n:['n_strat','n_oq'],e:['e_strat_oq'],t:'주문을 <b class="s">order_q</b>에 넣습니다: <code>P(empty) → P(pmtx) → 기록 → V(pmtx) → V(full)</code>. 워커가 다 바빠서 큐가 꽉 차면 전략은 여기서 잠듭니다(backpressure).'},
+    {n:['n_oq','n_wk','n_rl'],e:['e_oq_wk','e_wk_rl'],t:'놀고 있던 <b class="s">워커</b> 하나가 <code>P(full)</code>에서 깨어나 주문을 꺼냅니다. 브로커를 부르기 전에 <code>P(rl_trade)</code>로 초당 한도 permit을 얻습니다.'},
+    {n:['n_wk','n_kis','n_ex'],e:['e_wk_kis','e_wk_ex'],t:'워커가 브로커를 호출합니다(수십 ms의 I/O 대기). 그동안 다른 워커들은 다른 주문을 처리합니다. 모의 모드에서는 거래소가 주문을 받는 즉시 체결을 준비하는데, 그게 <b>접수 응답보다 먼저</b> 끝날 수 있습니다.'},
+    {n:['n_wk','n_reg','n_strat'],e:['e_wk_reg'],t:'응답(주문번호)이 오면 <code>reg_bind</code>를 합니다: <code>P(registry.mtx)</code> 안에서 ① 주문번호 등록 ② 전략에게 접수 ACK 전달 ③ 먼저 도착해 park된 체결이 있으면 회수. 그다음 <code>V(mtx)</code>. 그래서 체결이 등록보다 먼저 와도 사라지지 않고, 접수보다 먼저 전략에 가지도 않습니다.'},
+    {n:['n_ex','n_reg','n_book'],e:['e_ex_reg','e_ex_book'],t:'<b class="s">거래소</b>가 체결을 만들고 <code>reg_route</code>로 주인을 찾습니다. 찾으면 <b class="s">장부</b>에 쓰기 락(<code>P(turnstile)</code>, <code>P(room_empty)</code>)을 잡고 반영합니다. 못 찾으면 park 해 두고, 워커가 bind할 때 넘겨받습니다.'},
+    {n:['n_book','n_strat'],e:['e_book_strat'],t:'체결 ACK가 전략 우편함의 <b>ACK 큐</b>에 들어갑니다(<code>tryput</code> — inflight 논증 때문에 절대 실패하지 않음). 전략은 시세보다 ACK를 먼저 꺼내 포지션을 LONG으로 바꾸고, <code>V(inflight)</code>로 미체결 자리를 반납합니다. 청산이 체결되면 <code>V(exposure)</code>로 계좌 한도 자리도 반납합니다.'},
+    {n:['n_rl','n_refill'],e:['e_rl_refill'],t:'<b class="s">refill 스레드</b>는 몇 ms마다 만기된 반납 예약을 찾아 <code>V(permits)</code>를 합니다. 응답 받은 지 1.05초가 지난 permit만 돌아오므로, 서버가 보는 어떤 1초 구간에도 한도를 넘지 않습니다.'},
+    {n:['n_aux','n_strat','n_main'],e:[],t:'<b class="s">clock</b>은 1초마다 시계 틱을 보내고, 장 마감 시각에 모든 전략에 FLATTEN을 보내 전량 청산시킵니다. <b class="s">nav</b>는 브로커 잔고를 조회해 장부와 대조합니다. <b class="s">main</b>은 sigwait로 시그널만 기다리다가, feeder가 죽으면 다시 띄웁니다.'}
+  ];
+  var i=0, dots=document.getElementById('dots');
+  steps.forEach(function(){var d=document.createElement('i');dots.appendChild(d);});
+  function render(){
+    dst.querySelectorAll('.node').forEach(function(g){g.classList.remove('on');});
+    dst.querySelectorAll('.edge').forEach(function(p){p.classList.remove('on');});
+    var s=steps[i];
+    s.n.forEach(function(id){var g=dst.querySelector('#s'+id); if(g) g.classList.add('on');});
+    s.e.forEach(function(id){var p=dst.querySelector('#s'+id); if(p) p.classList.add('on');});
+    document.getElementById('stepText').innerHTML=s.t;
+    document.getElementById('stepNo').textContent=(i+1)+' / '+steps.length;
+    Array.prototype.forEach.call(dots.children,function(d,k){d.classList.toggle('on',k===i);});
+    document.getElementById('prevBtn').disabled=i===0;
+    document.getElementById('nextBtn').disabled=i===steps.length-1;
+  }
+  document.getElementById('prevBtn').onclick=function(){if(i>0){i--;render();}};
+  document.getElementById('nextBtn').onclick=function(){if(i<steps.length-1){i++;render();}};
+  render();
+
+  /* 유한 버퍼 시뮬레이터 */
+  var CAP=4, S;
+  var slotsEl=document.getElementById('slots'), logEl=document.getElementById('simlog');
+  function reset(){
+    S={buf:[],empty:CAP,full:0,mtx:1,seq:0,pid:0,cid:0,
+       waitEmpty:[],waitFull:[],waitMtx:[],deadlock:false};
+    logEl.innerHTML=''; log('버퍼 용량 '+CAP+', empty='+CAP+', full=0, mutex=1');
+    draw();
+  }
+  function bad(){return document.getElementById('bad').checked;}
+  function log(m,cls){var d=document.createElement('div'); if(cls) d.className=cls; d.textContent=m; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight;}
+  function draw(){
+    slotsEl.innerHTML='';
+    for(var k=0;k<CAP;k++){var d=document.createElement('div'); d.className='slot'+(k<S.buf.length?' f':''); d.textContent=k<S.buf.length?('#'+S.buf[k]):''; slotsEl.appendChild(d);}
+    document.getElementById('vEmpty').textContent=S.empty;
+    document.getElementById('vFull').textContent=S.full;
+    document.getElementById('vMtx').textContent=S.mtx;
+    var w=[];
+    if(S.waitEmpty.length) w.push('empty에서 잠든 생산자 '+S.waitEmpty.map(function(x){return x.name+(x.holdsMtx?'(mutex 쥠!)':'');}).join(', '));
+    if(S.waitFull.length) w.push('full에서 잠든 소비자 '+S.waitFull.join(', '));
+    if(S.waitMtx.length) w.push('mutex에서 잠든 '+S.waitMtx.map(function(x){return x.name;}).join(', '));
+    document.getElementById('waitq').textContent='대기 중: '+(w.length?w.join(' · '):'없음');
+    document.getElementById('bProd').disabled=S.deadlock;
+    document.getElementById('bCons').disabled=S.deadlock;
+  }
+  function checkDeadlock(){
+    var holder=S.waitEmpty.some(function(x){return x.holdsMtx;});
+    if(bad() && holder && S.waitMtx.some(function(x){return x.kind==='C';})){
+      S.deadlock=true;
+      log('교착 상태! 생산자는 mutex를 쥔 채 empty를 기다리고, 소비자는 그 mutex를 기다립니다. 아무도 진행할 수 없습니다.','bad');
+      log('→ 올바른 코드는 P(empty)를 먼저 해서, 기다리는 동안 mutex를 쥐지 않습니다. [초기화]','bad');
+    }
+  }
+  /* 올바른 모델: P(empty) → P(pmtx). 시뮬레이터는 임계구역을 즉시 끝나는 것으로 본다 */
+  function doPut(name){S.buf.push(++S.seq); S.full++; log('  '+name+': 칸에 #'+S.seq+' 기록 → V(full) = '+S.full,'okc'); wakeConsumer();}
+  function doGet(name){var v=S.buf.shift(); S.empty++; log('  '+name+': #'+v+' 꺼냄 → V(empty) = '+S.empty,'okc'); wakeProducer();}
+  function wakeConsumer(){
+    if(S.waitFull.length && S.full>0){var c=S.waitFull.shift(); S.full--; log(c+' 깨어남 (P(full) 통과)'); consumerAfterFull(c);}
+  }
+  function wakeProducer(){
+    if(S.waitEmpty.length && S.empty>0){
+      var p=S.waitEmpty.shift(); S.empty--; log(p.name+' 깨어남 (P(empty) 통과)');
+      if(p.holdsMtx){doPut(p.name); releaseMtx(p.name);} else producerAfterEmpty(p.name);
+    }
+  }
+  function releaseMtx(name){
+    S.mtx=1; log('  '+name+': V(mutex)');
+    if(S.waitMtx.length){var w=S.waitMtx.shift(); S.mtx=0; log(w.name+' 깨어남 (P(mutex) 통과)');
+      if(w.kind==='C'){doGet(w.name); releaseMtx(w.name);} else {badProducerAfterMtx(w.name);} }
+  }
+  function producerAfterEmpty(name){ /* 좋은 코드: 생산자 전용 mutex는 즉시 얻는다고 봄 */
+    if(bad()){ /* 사용 안 됨 */ }
+    log('  '+name+': P(pmtx) 통과'); doPut(name); log('  '+name+': V(pmtx)');
+  }
+  function consumerAfterFull(name){
+    if(bad()){
+      if(S.mtx===1){S.mtx=0; log('  '+name+': P(mutex) 통과'); doGet(name); releaseMtx(name);}
+      else {S.waitMtx.push({name:name,kind:'C'}); log('  '+name+': P(mutex) → 잠듦 (누가 mutex를 쥐고 있음)','bad'); checkDeadlock();}
+    } else {log('  '+name+': P(cmtx) 통과'); doGet(name); log('  '+name+': V(cmtx)');}
+  }
+  function badProducerAfterMtx(name){
+    if(S.empty>0){S.empty--; log('  '+name+': P(empty) 통과'); doPut(name); releaseMtx(name);}
+    else {S.waitEmpty.push({name:name,holdsMtx:true}); log('  '+name+': mutex를 쥔 채 P(empty) → 잠듦','bad'); checkDeadlock();}
+  }
+  document.getElementById('bProd').onclick=function(){
+    var name='생산자'+(++S.pid); log(name+' 도착');
+    if(bad()){
+      if(S.mtx===1){S.mtx=0; log('  '+name+': P(mutex) 통과'); badProducerAfterMtx(name);}
+      else {S.waitMtx.push({name:name,kind:'P'}); log('  '+name+': P(mutex) → 잠듦');}
+    } else {
+      if(S.empty>0){S.empty--; log('  '+name+': P(empty) 통과 → '+S.empty); producerAfterEmpty(name);}
+      else {S.waitEmpty.push({name:name,holdsMtx:false}); log('  '+name+': P(empty) → 0이라 잠듦 (mutex는 안 쥠)');}
+    }
+    draw();
+  };
+  document.getElementById('bCons').onclick=function(){
+    var name='소비자'+(++S.cid); log(name+' 도착');
+    if(S.full>0){S.full--; log('  '+name+': P(full) 통과 → '+S.full); consumerAfterFull(name);}
+    else {S.waitFull.push(name); log('  '+name+': P(full) → 0이라 잠듦');}
+    draw();
+  };
+  document.getElementById('bReset').onclick=reset;
+  document.getElementById('bad').onchange=function(){
+    document.getElementById('mtxBox').style.borderColor=bad()?'var(--bad)':'';
+    reset(); log(bad()?'잘못된 코드 모드: P(mutex) → P(empty), mutex 1개를 생산자·소비자가 공유':'올바른 코드 모드: P(empty) → P(pmtx) / P(full) → P(cmtx)');
+  };
+  reset();
+})();
+</script>
+</body>
+</html>
